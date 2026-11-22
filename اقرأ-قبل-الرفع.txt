@@ -1,0 +1,2 @@
+ارفع محتويات هذا المجلد مباشرة إلى Netlify Drop (وليس المجلد الأب، ولا ملف ZIP نفسه).
+يجب أن يكون index.html في جذر النشر بجوار manifest.webmanifest و service-worker.js.

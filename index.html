@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#123b46"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#123b46"><title>حسابات مركز الأشعة</title>
+<style>
+:root{--bg:#f3f7f7;--card:#fff;--ink:#18343a;--muted:#71858a;--main:#176574;--accent:#e5f2ef;--line:#e3eceb;--danger:#b84242}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif}
+header{background:linear-gradient(120deg,#123b46,#176574);color:white;padding:22px 16px 18px}
+header h1{font-size:22px;margin:0 0 6px}header p{margin:0;color:#d7e8e8;font-size:13px}
+nav{display:flex;gap:7px;overflow:auto;padding:10px;background:#fff;position:sticky;top:0;z-index:5;border-bottom:1px solid var(--line)}
+nav button{white-space:nowrap;border:0;background:#eef4f3;color:#36565c;padding:10px 13px;border-radius:12px;font-weight:700}
+nav button.active{background:var(--main);color:white}
+main{max-width:900px;margin:auto;padding:14px}.panel{display:none}.panel.active{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:16px;margin:0 0 13px;box-shadow:0 4px 16px #173e4610}
+h2{font-size:18px;margin:0 0 14px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.field{margin-bottom:11px}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px;color:#49646a}
+input,select,textarea{width:100%;padding:12px;border:1px solid #d7e3e1;border-radius:11px;background:#fff;color:var(--ink);font:inherit;min-height:45px}
+button.primary,.action{background:var(--main);color:white;border:0;border-radius:12px;padding:12px 16px;font:inherit;font-weight:750;cursor:pointer}
+button.secondary{background:var(--accent);color:var(--main);border:0;border-radius:11px;padding:10px 13px;font:inherit;font-weight:700}
+button.danger{background:#fff0f0;color:var(--danger);border:1px solid #f0cccc;border-radius:10px;padding:8px 10px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.hint{font-size:12px;color:var(--muted);line-height:1.7}
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{background:#f0f7f6;border-radius:13px;padding:12px}.stat small{display:block;color:var(--muted)}.stat strong{font-size:20px}
+.item{padding:12px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}.itemtop{display:flex;justify-content:space-between;gap:8px;align-items:start}.muted{color:var(--muted);font-size:12px}
+.pill{display:inline-block;padding:4px 8px;border-radius:20px;background:#fff2d9;color:#805a14;font-size:12px}
+.total{font-weight:800;color:var(--main)}.hidden{display:none!important}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.statgrid{grid-template-columns:1fr 1fr}main{padding:10px}}
+</style></head>
+<body>
+<header><h1>حسابات مركز الأشعة</h1><p>نسخة تجريبية تعمل محليًا وتحفظ البيانات على نفس الجهاز</p></header>
+<nav id="tabs">
+<button class="active" data-tab="new">عملية جديدة</button><button data-tab="patients">المرضى</button><button data-tab="dues">مبالغ مستحقة</button><button data-tab="expense">مصروفات</button><button data-tab="reports">التقارير</button><button data-tab="settings">إعدادات الأسعار</button><button data-tab="backup">نسخة احتياطية</button>
+</nav>
+<main>
+<section id="new" class="panel active">
+<div class="card"><h2>تسجيل عملية أشعة</h2>
+<div class="grid">
+<div class="field"><label>اسم المريض *</label><input id="patient" placeholder="اسم المريض"></div>
+<div class="field"><label>رقم الموبايل (اختياري)</label><input id="mobile" inputmode="tel" placeholder="رقم الموبايل"></div>
+<div class="field"><label>اسم الدكتور (اختياري)</label><input id="doctor" placeholder="اسم الدكتور"></div>
+<div class="field"><label>التاريخ والوقت</label><input id="opdate" type="datetime-local"></div>
+</div>
+<div id="services"></div><button class="secondary" id="addService">＋ إضافة أشعة أخرى</button>
+<div class="grid" style="margin-top:14px">
+<div class="field"><label>الخصم على الفاتورة (جنيه)</label><input id="discount" type="number" min="0" value="0"></div>
+<div class="field"><label>المبلغ المقبوض الآن (جنيه)</label><input id="paid" type="number" min="0" value="0"></div>
+</div>
+<div class="statgrid"><div class="stat"><small>إجمالي الأشعة</small><strong id="subtotal">0</strong></div><div class="stat"><small>بعد الخصم</small><strong id="grand">0</strong></div><div class="stat"><small>المتبقي</small><strong id="remaining">0</strong></div></div>
+<p class="hint">الأسعار تظهر تلقائيًا حسب نوع الأشعة وطريقة التسليم. راجع المبلغ قبل الحفظ.</p>
+<div class="actions"><button class="primary" id="saveOp">حفظ العملية</button></div>
+</div></section>
+<section id="patients" class="panel"><div class="card"><h2>بحث عن مريض</h2><input id="patientSearch" placeholder="ابحث بالاسم أو رقم الموبايل"><div id="patientResults"></div></div></section>
+<section id="dues" class="panel"><div class="card"><h2>المرضى عليهم مبالغ</h2><div id="duesList"></div></div><div class="card hidden" id="collectCard"><h2>تحصيل مبلغ سابق</h2><div id="collectDetails"></div><div class="field"><label>المبلغ المقبوض الآن</label><input id="collectAmount" type="number" min="1"></div><button class="primary" id="saveCollect">تسجيل التحصيل</button></div></section>
+<section id="expense" class="panel"><div class="card"><h2>تسجيل مصروف</h2><div class="grid"><div class="field"><label>بيان المصروف *</label><input id="expenseName" placeholder="مثال: مستلزمات"></div><div class="field"><label>المبلغ *</label><input id="expenseAmount" type="number" min="1"></div><div class="field"><label>التاريخ والوقت</label><input id="expenseDate" type="datetime-local"></div></div><button class="primary" id="saveExpense">حفظ المصروف</button></div><div class="card"><h2>مصروفات اليوم</h2><div id="expenseList"></div></div></section>
+<section id="reports" class="panel"><div class="card"><h2>التقرير اليومي</h2><div class="field"><label>اختار اليوم</label><input id="reportDate" type="date"></div><div class="statgrid"><div class="stat"><small>المقبوض اليوم</small><strong id="rIncome">0</strong></div><div class="stat"><small>المصروفات</small><strong id="rExpense">0</strong></div><div class="stat"><small>الصافي</small><strong id="rNet">0</strong></div></div><div id="reportDetails"></div></div></section>
+<section id="settings" class="panel"><div class="card"><h2>إعدادات الأسعار والأنواع</h2><p class="hint">غيّر أسعار الخدمات الحالية أو أضف نوع أشعة جديد. التغييرات تُحفظ على هذا الجهاز فقط.</p><div id="priceSettings"></div></div><div class="card"><h2>حماية الإعدادات</h2><p class="hint">تقدر تغيّر كلمة المرور من هنا بعد إدخال كلمة المرور الحالية.</p><div class="field"><label>كلمة المرور الحالية</label><input id="oldSettingsPass" type="password" autocomplete="current-password"></div><div class="field"><label>كلمة المرور الجديدة</label><input id="newSettingsPass" type="password" autocomplete="new-password"></div><button class="secondary" id="changeSettingsPass">تغيير كلمة المرور</button></div><div class="card"><h2>إضافة نوع أشعة / خدمة</h2><div class="field"><label>اسم الخدمة الجديدة</label><input id="newTypeName" placeholder="اكتب اسم الخدمة"></div><div class="grid"><div class="field"><label>سعر Print</label><input id="newTypePrint" type="number" min="0" value="0"></div><div class="field"><label>سعر WhatsApp</label><input id="newTypeWa" type="number" min="0" value="0"></div></div><button class="primary" id="addTypeBtn">إضافة الخدمة</button><p class="hint">للخدمات التي ليس لها اختلاف بين التسليمين، اكتب نفس السعر في الخانتين.</p></div></section>
+<section id="backup" class="panel"><div class="card"><h2>النسخ الاحتياطي ونقل البيانات</h2><p class="hint">بيانات هذا الجهاز مستقلة عن الجهاز الآخر. نزّل نسخة احتياطية بانتظام، وانقلها يدويًا للجهاز الآخر عند الحاجة.</p><div class="actions"><button class="primary" id="exportBtn">تنزيل نسخة احتياطية</button><label class="secondary" style="display:inline-flex;align-items:center;cursor:pointer">استيراد نسخة احتياطية<input id="importFile" type="file" accept="application/json" class="hidden"></label></div><p class="hint">الاستيراد يستبدل البيانات الحالية على هذا الجهاز. احتفظ بنسخة قبل الاستيراد.</p></div></section>
+</main>
+<script>
+const DB='dental_center_local_v1';let db,selectedDebt=null;
+const $=id=>document.getElementById(id), money=n=>(Number(n)||0).toLocaleString('ar-EG',{maximumFractionDigits:2});
+const nowLocal=()=>{let d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16)};
+function openDB(){return new Promise((res,rej)=>{let r=indexedDB.open(DB,1);r.onupgradeneeded=()=>{let d=r.result;['ops','collections','expenses'].forEach(s=>{if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:'id',autoIncrement:true})})};r.onsuccess=()=>{db=r.result;res()};r.onerror=()=>rej(r.error)})}
+function all(store){return new Promise((res,rej)=>{let r=db.transaction(store).objectStore(store).getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+function add(store,obj){return new Promise((res,rej)=>{let r=db.transaction(store,'readwrite').objectStore(store).add(obj);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+function replaceAll(store,rows){return new Promise((res,rej)=>{let t=db.transaction(store,'readwrite'),s=t.objectStore(store);s.clear();rows.forEach(x=>s.put(x));t.oncomplete=res;t.onerror=()=>rej(t.error)})}
+const defaultPrices={
+'Panoramic':{print:180,wa:150},'Periapical':{print:80,wa:60,perFilm:true},
+'Cephalometric':{print:180,wa:150},'Bitewing Right + Left':{print:150,wa:150},
+'Bitewing جهة واحدة':{print:100,wa:100},'Ortho File':{print:550,wa:450},
+'Analysis فقط':{print:150,wa:150},'Cephalometric + Analysis':{print:330,wa:300},
+'Photo فقط':{print:150,wa:150},'CBCT Quadrant':{print:350,wa:350},
+'CBCT Upper Arch':{print:500,wa:500},'CBCT Lower Arch':{print:500,wa:500},
+'CBCT Full Arches':{print:800,wa:800},'TMJ Open & Closed':{print:500,wa:500},
+'CBCT أسطوانة Upper/Lower Jaw':{print:700,wa:700},'CBCT أسطوانة Single Jaw':{print:400,wa:400},
+'CBCT أسطوانة Quadrant':{print:300,wa:300}};
+let priceConfig=(()=>{try{return JSON.parse(localStorage.getItem('dental_price_config'))||JSON.parse(JSON.stringify(defaultPrices))}catch{return JSON.parse(JSON.stringify(defaultPrices))}})();
+function savePriceConfig(){localStorage.setItem('dental_price_config',JSON.stringify(priceConfig))}
+let types=Object.keys(priceConfig);
+const price=(type,delivery,extra)=>{let p=priceConfig[type]||{print:0,wa:0},v=delivery==='WhatsApp'?p.wa:p.print;return v*(p.perFilm?Math.max(1,Number(extra)||1):1)};
+function addServiceRow(){let wrap=document.createElement('div');wrap.className='card serviceRow';wrap.innerHTML=`<div class="grid"><div class="field"><label>نوع الأشعة / الخدمة</label><select class="stype">${types.map(t=>`<option>${t}</option>`).join('')}</select></div><div class="field"><label>طريقة التسليم</label><select class="delivery"><option>Print</option><option>WhatsApp</option></select></div><div class="field percount"><label>عدد أفلام Periapical</label><input class="count" type="number" min="1" value="1"></div><div class="field"><label>السعر التلقائي</label><input class="rowprice" readonly value="180"></div></div><button class="danger remove">حذف البند</button>`;$('services').append(wrap);wrap.querySelectorAll('select,input').forEach(x=>x.addEventListener('change',calc));wrap.querySelector('.remove').onclick=()=>{if(document.querySelectorAll('.serviceRow').length>1)wrap.remove();calc()};calc()}
+function calc(){let sum=0;document.querySelectorAll('.serviceRow').forEach(r=>{let t=r.querySelector('.stype').value,d=r.querySelector('.delivery').value,c=r.querySelector('.count').value,p=price(t,d,c);r.querySelector('.rowprice').value=p;sum+=p;r.querySelector('.percount').classList.toggle('hidden',!priceConfig[t]?.perFilm)});let disc=Math.max(0,+$('discount').value||0),grand=Math.max(0,sum-disc),paid=Math.max(0,+$('paid').value||0);$('subtotal').textContent=money(sum);$('grand').textContent=money(grand);$('remaining').textContent=money(Math.max(0,grand-paid))}
+function day(v){return (v||'').slice(0,10)}function dateToday(){let d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+let settingsUnlocked=false;
+async function passwordDigest(v){
+ if(window.crypto&&crypto.subtle){let bytes=new TextEncoder().encode(v),hash=await crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(hash)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+ let h=2166136261;for(let i=0;i<v.length;i++){h^=v.charCodeAt(i);h=Math.imul(h,16777619)}return 'fallback-'+(h>>>0).toString(16);
+}
+async function unlockSettings(){
+ let saved=localStorage.getItem('dental_settings_password');
+ if(!saved){let first=prompt('أول مرة تفتح إعدادات الأسعار. أنشئ كلمة مرور خاصة بك:');if(first===null)return false;if(first.length<4){alert('خلي كلمة المرور 4 أحرف أو أرقام على الأقل.');return false}let again=prompt('اكتب كلمة المرور مرة ثانية للتأكيد:');if(first!==again){alert('كلمتا المرور غير متطابقتين.');return false}localStorage.setItem('dental_settings_password',await passwordDigest(first));alert('تم إنشاء كلمة مرور الإعدادات. احتفظ بها في مكان آمن.');return true}
+ let entered=prompt('إعدادات الأسعار محمية. اكتب كلمة المرور:');if(entered===null)return false;if(await passwordDigest(entered)!==saved){alert('كلمة المرور غير صحيحة.');return false}return true;
+}
+$('changeSettingsPass').onclick=async()=>{let old=$('oldSettingsPass').value,n=$('newSettingsPass').value;if(!old||!n)return alert('اكتب كلمة المرور الحالية والجديدة.');if(await passwordDigest(old)!==localStorage.getItem('dental_settings_password'))return alert('كلمة المرور الحالية غير صحيحة.');if(n.length<4)return alert('كلمة المرور الجديدة لازم تكون 4 أحرف أو أرقام على الأقل.');localStorage.setItem('dental_settings_password',await passwordDigest(n));$('oldSettingsPass').value=$('newSettingsPass').value='';alert('تم تغيير كلمة المرور بنجاح.')};
+function renderPriceSettings(){
+ const host=$('priceSettings');
+ host.innerHTML=Object.entries(priceConfig).map(([name,p])=>`<div class="item"><div class="itemtop"><b>${esc(name)}</b><button class="secondary" data-rename-type="${esc(name)}">تعديل الاسم</button></div><div class="grid" style="margin-top:8px"><div class="field"><label>سعر Print</label><input type="number" min="0" data-name="${esc(name)}" data-kind="print" value="${Number(p.print)||0}"></div><div class="field"><label>سعر WhatsApp</label><input type="number" min="0" data-name="${esc(name)}" data-kind="wa" value="${Number(p.wa)||0}"></div></div><label style="display:flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" data-name="${esc(name)}" data-kind="perFilm" ${p.perFilm?'checked':''} style="width:auto;min-height:0"> السعر يُحسب لكل فيلم</label>${!defaultPrices[name]?`<button class="danger" data-delete-type="${esc(name)}">حذف النوع</button>`:''}</div>`).join('');
+ host.querySelectorAll('input').forEach(inp=>inp.addEventListener('change',()=>{let n=inp.dataset.name,k=inp.dataset.kind;if(k==='perFilm')priceConfig[n][k]=inp.checked;else priceConfig[n][k]=Math.max(0,Number(inp.value)||0);savePriceConfig();refreshTypeOptions();calc()}));
+ host.querySelectorAll('[data-rename-type]').forEach(btn=>btn.onclick=()=>{let old=btn.dataset.renameType,n=prompt('اكتب الاسم الجديد للخدمة:',old);if(n===null)return;n=n.trim();if(!n)return alert('الاسم لا يمكن أن يكون فارغًا.');if(n!==old&&priceConfig[n])return alert('يوجد نوع خدمة بهذا الاسم بالفعل.');if(n!==old){priceConfig[n]=priceConfig[old];delete priceConfig[old];savePriceConfig();renderPriceSettings();refreshTypeOptions();calc()}});
+ host.querySelectorAll('[data-delete-type]').forEach(btn=>btn.onclick=()=>{let n=btn.dataset.deleteType;if(!confirm('حذف نوع الخدمة من قائمة الاختيارات؟'))return;delete priceConfig[n];savePriceConfig();types=Object.keys(priceConfig);renderPriceSettings();refreshTypeOptions();calc()});
+}
+function refreshTypeOptions(){types=Object.keys(priceConfig);document.querySelectorAll('.stype').forEach(sel=>{let old=sel.value;sel.innerHTML=types.map(t=>`<option>${esc(t)}</option>`).join('');if(types.includes(old))sel.value=old})}
+$('addTypeBtn').onclick=()=>{let n=$('newTypeName').value.trim();if(!n)return alert('اكتب اسم الخدمة أولًا.');if(priceConfig[n])return alert('نوع الخدمة موجود بالفعل.');priceConfig[n]={print:Math.max(0,+$('newTypePrint').value||0),wa:Math.max(0,+$('newTypeWa').value||0)};savePriceConfig();renderPriceSettings();refreshTypeOptions();$('newTypeName').value='';$('newTypePrint').value=$('newTypeWa').value='0';alert('تمت إضافة نوع الخدمة')};
+async function renderPatients(){let q=$('patientSearch').value.trim().toLowerCase(),ops=await all('ops'),cols=await all('collections');let names=[...new Set(ops.map(o=>o.patient))].filter(n=>n.toLowerCase().includes(q)||ops.some(o=>o.patient===n&&(o.mobile||'').includes(q)));$('patientResults').innerHTML=names.length?names.map(n=>{let arr=ops.filter(o=>o.patient===n).sort((a,b)=>b.date.localeCompare(a.date));return `<div class="item"><b>${esc(n)}</b><div class="muted">${esc(arr[0].mobile||'بدون رقم موبايل')} · ${arr.length} عملية</div>${arr.map(o=>`<div class="item"><div class="itemtop"><b>${esc(o.date.replace('T',' '))}</b><span class="total">${money(o.total)} ج</span></div><div class="muted">د. ${esc(o.doctor)} · ${o.lines.map(x=>esc(x.type)).join('، ')}</div><div>مدفوع: ${money(o.paid)} ج — متبقي: ${money(o.total-o.paid-(cols.filter(c=>c.opId===o.id).reduce((s,c)=>s+c.amount,0)))} ج</div></div>`).join('')}</div>`}).join(''):'<p class="hint">لا توجد نتائج.</p>'}
+async function debtData(){let ops=await all('ops'),cols=await all('collections');return ops.map(o=>({...o,collected:cols.filter(c=>c.opId===o.id).reduce((s,c)=>s+c.amount,0)})).filter(o=>o.total-o.paid-o.collected>0.001)}
+async function renderDues(){let ds=await debtData();$('duesList').innerHTML=ds.length?ds.map(o=>`<div class="item"><div class="itemtop"><div><b>${esc(o.patient)}</b><div class="muted">${esc(o.date.replace('T',' '))} · ${esc(o.lines.map(x=>x.type).join('، '))}</div></div><span class="pill">متبقي ${money(o.total-o.paid-o.collected)} ج</span></div><div class="muted">الإجمالي ${money(o.total)} · المدفوع سابقًا ${money(o.paid+o.collected)} · قبل التحصيل الحالي ${money(o.total-o.paid-o.collected)}</div><button class="secondary" onclick="selectDebt(${o.id})">تحصيل من هذه العملية</button></div>`).join(''):'<p class="hint">مفيش مبالغ مستحقة حاليًا 🎉</p>'}
+window.selectDebt=async id=>{let o=(await all('ops')).find(x=>x.id===id),cs=await all('collections'),got=cs.filter(c=>c.opId===id).reduce((s,c)=>s+c.amount,0);selectedDebt={...o,got};$('collectCard').classList.remove('hidden');$('collectDetails').innerHTML=`<b>${esc(o.patient)}</b><p class="muted">تاريخ العملية: ${esc(o.date.replace('T',' '))}</p><p>إجمالي العملية: ${money(o.total)} ج</p><p>المدفوع سابقًا: ${money(o.paid+got)} ج</p><p class="total">المتبقي قبل التحصيل: ${money(o.total-o.paid-got)} ج</p>`;$('collectAmount').value=o.total-o.paid-got;};
+async function renderExpenses(){let es=await all('expenses'),today=dateToday();$('expenseList').innerHTML=es.filter(e=>day(e.date)===today).map(e=>`<div class="item">${esc(e.name)} <b class="total">${money(e.amount)} ج</b><div class="muted">${esc(e.date.replace('T',' '))}</div></div>`).join('')||'<p class="hint">لا توجد مصروفات اليوم.</p>'}
+async function renderReport(){let d=$('reportDate').value,ops=await all('ops'),cs=await all('collections'),es=await all('expenses');let income=ops.filter(o=>day(o.date)===d).reduce((s,o)=>s+o.paid,0)+cs.filter(c=>day(c.date)===d).reduce((s,c)=>s+c.amount,0),expense=es.filter(e=>day(e.date)===d).reduce((s,e)=>s+e.amount,0);$('rIncome').textContent=money(income);$('rExpense').textContent=money(expense);$('rNet').textContent=money(income-expense);let dailyOps=ops.filter(o=>day(o.date)===d),dailyCs=cs.filter(c=>day(c.date)===d),dailyEs=es.filter(e=>day(e.date)===d);$('reportDetails').innerHTML=`<h3>عمليات الأشعة (${dailyOps.length})</h3>${dailyOps.map(o=>`<div class="item"><b>${esc(o.patient)}</b> · ${esc(o.lines.map(x=>x.type).join('، '))}<div class="muted">مقبوض ${money(o.paid)} ج من إجمالي ${money(o.total)} ج</div></div>`).join('')}<h3>تحصيلات سابقة (${dailyCs.length})</h3>${dailyCs.map(c=>`<div class="item">${esc(c.patient)} · ${money(c.amount)} ج <div class="muted">عملية أصلية بتاريخ ${esc(c.originalDate)}</div></div>`).join('')}<h3>المصروفات (${dailyEs.length})</h3>${dailyEs.map(e=>`<div class="item">${esc(e.name)} · ${money(e.amount)} ج</div>`).join('')}`}
+async function refresh(){await renderPatients();await renderDues();await renderExpenses();await renderReport()}
+$('tabs').onclick=async e=>{let b=e.target.closest('button[data-tab]');if(!b)return;if(b.dataset.tab==='settings'&&!settingsUnlocked){let ok=await unlockSettings();if(!ok)return;settingsUnlocked=true}if(b.dataset.tab!=='settings')settingsUnlocked=false;document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id===b.dataset.tab));refresh()};
+$('addService').onclick=addServiceRow;$('discount').oninput=calc;$('paid').oninput=calc;
+$('saveOp').onclick=async()=>{let patient=$('patient').value.trim(),doctor=$('doctor').value.trim(),date=$('opdate').value,lines=[...document.querySelectorAll('.serviceRow')].map(r=>({type:r.querySelector('.stype').value,delivery:r.querySelector('.delivery').value,count:+r.querySelector('.count').value,price:+r.querySelector('.rowprice').value})),subtotal=lines.reduce((s,x)=>s+x.price,0),total=Math.max(0,subtotal-(+$('discount').value||0)),paid=+$('paid').value||0;if(!patient||!date)return alert('اكتب اسم المريض والتاريخ.');if(paid>total)return alert('المبلغ المقبوض أكبر من إجمالي الفاتورة.');await add('ops',{patient,mobile:$('mobile').value.trim(),doctor,date,lines,subtotal,discount:+$('discount').value||0,total,paid});alert('تم حفظ العملية بنجاح');$('patient').value=$('mobile').value=$('doctor').value='';$('discount').value='0';$('paid').value='0';$('services').innerHTML='';addServiceRow();$('opdate').value=nowLocal();refresh()};
+$('saveCollect').onclick=async()=>{if(!selectedDebt)return;let amount=+$('collectAmount').value,remaining=selectedDebt.total-selectedDebt.paid-selectedDebt.got;if(!(amount>0)||amount>remaining)return alert('اكتب مبلغًا صحيحًا لا يتجاوز المتبقي.');await add('collections',{opId:selectedDebt.id,patient:selectedDebt.patient,amount,date:nowLocal(),originalDate:selectedDebt.date});alert('تم تسجيل التحصيل كدخل بتاريخ اليوم');$('collectCard').classList.add('hidden');selectedDebt=null;refresh()};
+$('saveExpense').onclick=async()=>{let name=$('expenseName').value.trim(),amount=+$('expenseAmount').value;if(!name||!(amount>0))return alert('اكتب بيان المصروف ومبلغًا صحيحًا.');await add('expenses',{name,amount,date:$('expenseDate').value||nowLocal()});$('expenseName').value=$('expenseAmount').value='';alert('تم حفظ المصروف');refresh()};
+$('patientSearch').oninput=renderPatients;$('reportDate').onchange=renderReport;
+$('exportBtn').onclick=async()=>{let data={version:1,exportedAt:new Date().toISOString(),ops:await all('ops'),collections:await all('collections'),expenses:await all('expenses')},blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='dental-center-backup-'+dateToday()+'.json';a.click();URL.revokeObjectURL(a.href)};
+$('importFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let d=JSON.parse(await f.text());if(!Array.isArray(d.ops)||!Array.isArray(d.collections)||!Array.isArray(d.expenses))throw 0;if(!confirm('سيتم استبدال البيانات الحالية بهذه النسخة. متأكد؟'))return;await replaceAll('ops',d.ops);await replaceAll('collections',d.collections);await replaceAll('expenses',d.expenses);alert('تم الاستيراد');refresh()}catch{alert('ملف النسخة الاحتياطية غير صالح')}e.target.value=''};
+(async()=>{await openDB();$('opdate').value=nowLocal();$('expenseDate').value=nowLocal();$('reportDate').value=dateToday();addServiceRow();renderPriceSettings();refresh()})().catch(e=>alert('تعذر فتح قاعدة البيانات في هذا المتصفح: '+e));
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').catch(err => console.error('SW registration failed', err));
+  });
+}
+</script></body></html>
